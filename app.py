@@ -1,7 +1,6 @@
-import requests
-import json
 from flask import Flask, jsonify, request
-from flask_cors  import CORS
+import requests
+from flask_cors import CORS
 
 
 def is_perfect(number):
@@ -14,6 +13,8 @@ def is_perfect(number):
     Returns:
         bool: True if the number is perfect, False otherwise.
     """
+    if number < 0:
+        return False  # Negative numbers cannot be perfect numbers
     num = [i for i in range(1, number) if number % i == 0]
     return sum(num) == number
 
@@ -28,7 +29,7 @@ def is_prime(n):
         bool: True if the number is prime, otherwise False.
     """
     if n < 2:
-        return False
+        return False  # Negative numbers and numbers less than 2 cannot be prime
     for i in range(2, n):
         if n % i == 0:
             return False
@@ -45,6 +46,9 @@ def is_armstrong(n):
     Returns:
         bool: True if the number is an Armstrong number, False otherwise.
     """
+    if n < 0:
+        return False  # Armstrong numbers are typically positive, so reject negative numbers
+    
     power = len(str(n))
     digits = [int(d) ** power for d in str(n)]
     return sum(digits) == n
@@ -64,6 +68,12 @@ def classy_numb():
             return jsonify(response), 400
 
         num = int(num)
+
+        # Check if number is negative
+        if num < 0:
+            return jsonify({
+                "error": "Negative numbers are not supported."
+            }), 400
 
         # Properties
         parity = "even" if num % 2 == 0 else "odd"
