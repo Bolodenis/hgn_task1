@@ -49,18 +49,18 @@ def is_armstrong(n):
     if n < 0:
         return False  # Armstrong numbers are typically positive, so reject negative numbers
     
-    power = len(str(n))
-    digits = [int(d) ** power for d in str(n)]
-    return sum(digits) == n
+    power = len(str(abs(n)))  # Consider absolute value for calculating power
+    digits = [int(d) ** power for d in str(abs(n))]  # Use absolute value for digits
+    return sum(digits) == abs(n)  # Compare the sum with the absolute value of n
 
 app = Flask(__name__)
 CORS(app)
 
-@app.route('/api/classify-number', methods=['GET'])
+@app.route("/api/classify-number", methods=["GET"])
 def classy_numb():
     try:
-        num = request.args.get("num")  # 'num' should be a string
-        if not num or not num.isdigit():
+        num = request.args.get("number")  # 'num' should be a string
+        if not num or not num.isdigit() and not (num[0] == '-' and num[1:].isdigit()):
             response = {
                 "error": True,
                 "num": "num"
@@ -69,29 +69,23 @@ def classy_numb():
 
         num = int(num)
 
-        # Check if number is negative
-        if num < 0:
-            return jsonify({
-                "error": "Negative numbers are not supported."
-            }), 400
-
         # Properties
         parity = "even" if num % 2 == 0 else "odd"
-        sum_digit = sum(int(d) for d in str(num))
+        sum_digit = sum(int(d) for d in str(abs(num)))  # Consider absolute value of number
         armstrong = is_armstrong(num)
         properties = ["armstrong", parity] if armstrong else [parity]
 
         # Fun fact (external API)
         base_url = "http://numbersapi.com/"
         fact_response = requests.get(f"{base_url}/{num}/math")
-        fun_fact = fact_response.text if fact_response.status_code == 200 else "No fact available"
+        fun_fact = fact_response.text if fact_response.status_code == 200 else f"No fact available for {num}"
 
         json_response = {
             "number": num,
             "is_prime": is_prime(num),
             "is_perfect": is_perfect(num),
             "properties": properties,
-            "digit_sum": sum_digit,
+            "digit_sum": sum_digit,  # Sum of digits (positive sum)
             "fun_fact": fun_fact
         }
 
