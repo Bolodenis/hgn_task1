@@ -56,7 +56,7 @@ def is_armstrong(n):
 app = Flask(__name__)
 CORS(app)
 
-@app.route("/", methods=["GET"])
+@app.route('/api/classify-number', methods=['GET'])
 def classy_numb():
     try:
         num = request.args.get("num")  # 'num' should be a string
